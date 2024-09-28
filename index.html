@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz : Démarche Marketing & Définition des Marchés</title>
+    <style>
+        body {
+            font-family: 'Mayan', sans-serif;
+            margin: 0;
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: #333;
+            text-align: center;
+        }
+        .quiz-container, .summary {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+            background-image: url('images/back.jpg.webp');
+            background-size: cover;
+            background-position: center;
+        }
+        .question {
+            font-size: 18px;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #000;
+        }
+        .choices {
+            list-style: none;
+            padding: 0;
+            text-align: left;
+            margin-left: 20%;
+        }
+        .choices li {
+            margin: 8px 0;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            background-color: #FF0000;
+            color: white;
+            border-radius: 10px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #CC0000;
+        }
+        .summary {
+            display: none;
+        }
+        .summary ul {
+            list-style: none;
+            padding: 0;
+        }
+        .summary li {
+            text-align: left;
+            margin-left: 20%;
+            margin-bottom: 10px;
+        }
+        .correct {
+            color: green;
+            font-weight: bold;
+        }
+        .incorrect {
+            color: red;
+            font-weight: bold;
+        }
+        .score {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        @media (max-width: 768px) {
+            .quiz-container, .summary {
+                max-width: 90%;
+                margin: 20px auto;
+                padding: 15px;
+                border-radius: 10px;
+            }
+            button {
+                font-size: 14px;
+                padding: 8px 16px;
+            }
+        }
+        @media (max-width: 480px) {
+            .quiz-container, .summary {
+                padding: 10px;
+                margin: 10px;
+                border-radius: 10px;
+            }
+            .question {
+                font-size: 16px;
+            }
+            button {
+                font-size: 12px;
+                padding: 6px 12px;
+                border-radius: 10px;
+            }
+        }
+        @media (min-width: 1024px) {
+            .quiz-container, .summary {
+                max-width: 800px;
+                padding: 30px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="quiz-container" id="quiz-container">
+    <h2>QCM ENTRAINEMENT - Assets, Depreciation, and Impairment</h2>
+    <div id="question-container">
+        <!-- Les questions seront affichées ici dynamiquement -->
+    </div>
+    <button id="next-button" onclick="nextQuestion()">Suivant</button>
+</div>
+
+<div class="summary" id="summary">
+    <h3>Récapitulatif</h3>
+    <ul id="summary-list">
+        <!-- Le récapitulatif des réponses sera affiché ici -->
+    </ul>
+    <div class="score" id="score"></div>
+    <button onclick="restartQuiz()">Recommencer</button>
+</div>
+
+<script>
+    const quizData = [
+        { question: "Which of the following is an example of a non-current asset?", choices: ["Cash", "Accounts receivable", "Inventory", "Buildings"], correct: 3 },
+        { question: "How are non-current assets initially measured if they are produced by the company?", choices: ["At their market value", "At their production cost", "At their residual value", "At their discounted future cash flows"], correct: 1 },
+        { question: "Which of the following costs is not included in the acquisition cost of an asset?", choices: ["Installation costs", "Delivery costs", "Regular maintenance costs", "Site preparation costs"], correct: 2 },
+        { question: "What is depreciation?", choices: ["The increase in value of an asset over time", "A systematic reduction of an asset's cost over its useful life", "An unexpected increase in an asset's market value", "A one-time expense recorded when an asset loses value"], correct: 1 },
+        { question: "Which method of depreciation results in the same amount of depreciation each year?", choices: ["Diminishing Balance Method", "Straight Line Depreciation", "Units of Production Method", "Residual Value Method"], correct: 1 },
+        { question: "In the diminishing balance depreciation method, how is depreciation calculated?", choices: ["By subtracting the residual value from the initial cost and dividing by useful life", "By applying a constant percentage to the net book value of the asset each year", "By allocating a fixed amount of depreciation to each unit produced", "By calculating depreciation based on market value at the end of each year"], correct: 1 },
+        { question: "Which of the following assets is not depreciated?", choices: ["Equipment", "Land", "Vehicles", "Buildings"], correct: 1 },
+        { question: "What is impairment in accounting terms?", choices: ["A systematic reduction of an asset's value over time", "An unplanned, significant loss in the value of an asset beyond normal depreciation", "The increase in the value of an asset over its useful life", "A reduction in liabilities due to early loan repayments"], correct: 1 },
+        { question: "When should impairment be recorded?", choices: ["Only when an asset is sold", "At the end of the asset's useful life", "Whenever the asset’s recoverable amount is lower than its book value", "When the company changes its depreciation method"], correct: 2 },
+        { question: "In an impairment example, if the asset's cost is 150, accumulated depreciation is 100, and the recoverable amount is 40, what is the necessary impairment expense?", choices: ["0", "10", "50", "100"], correct: 1 },
+        { question: "What is the residual value of an asset?", choices: ["The original purchase price of the asset", "The amount the asset is expected to be worth at the end of its useful life", "The cost of repairs and maintenance", "The value of the asset after accounting for inflation"], correct: 1 },
+        { question: "In the straight line depreciation method, how is the annual depreciation calculated?", choices: ["(Total cost – Residual value) / Useful life", "(Net book value – Residual value) × Depreciation rate", "Market value / Useful life", "(Cost of production – Residual value) / Depreciation rate"], correct: 0 },
+        { question: "What type of non-current assets can be amortized rather than depreciated?", choices: ["Tangible non-current assets", "Intangible non-current assets", "Financial non-current assets", "Non-depreciable assets"], correct: 1 },
+        { question: "Which method of depreciation is often used when an asset loses value more rapidly at the beginning of its useful life?", choices: ["Straight Line Depreciation", "Units of Production", "Diminishing Balance Method", "Accelerated Depreciation"], correct: 2 },
+        { question: "What is a key difference between depreciation and impairment?", choices: ["Depreciation is applied to intangible assets, while impairment is applied to tangible assets", "Depreciation is a planned, systematic expense, while impairment is an unplanned write-down of value", "Impairment is recorded annually, while depreciation is recorded only once", "Depreciation applies only to assets with a long useful life, while impairment applies to short-term assets"], correct: 1 }
+    ];
+
+    let currentQuestionIndex = 0;
+    let selectedAnswers = [];
+
+    function loadQuestion() {
+        const container = document.getElementById('question-container');
+        container.innerHTML = '';
+
+        const questionData = quizData[currentQuestionIndex];
+        const questionElem = document.createElement('div');
+        questionElem.className = 'question';
+        questionElem.textContent = questionData.question;
+
+        const choicesElem = document.createElement('ul');
+        choicesElem.className = 'choices';
+
+        questionData.choices.forEach((choice, index) => {
+            const choiceElem = document.createElement('li');
+            const choiceInput = document.createElement('input');
+            choiceInput.type = 'radio';
+            choiceInput.name = 'choice';
+            choiceInput.value = index;
+            choiceInput.id = `choice${index}`;
+            
+            const choiceLabel = document.createElement('label');
+            choiceLabel.htmlFor = `choice${index}`;
+            choiceLabel.textContent = choice;
+
+            choiceElem.appendChild(choiceInput);
+            choiceElem.appendChild(choiceLabel);
+            choicesElem.appendChild(choiceElem);
+        });
+
+        container.appendChild(questionElem);
+        container.appendChild(choicesElem);
+    }
+
+    function nextQuestion() {
+        const selectedChoice = document.querySelector('input[name="choice"]:checked');
+        if (!selectedChoice) {
+            alert("Veuillez sélectionner une réponse !");
+            return;
+        }
+
+        selectedAnswers.push(parseInt(selectedChoice.value));
+        currentQuestionIndex++;
+
+        if (currentQuestionIndex < quizData.length) {
+            loadQuestion();
+        } else {
+            showSummary();
+        }
+    }
+
+    function showSummary() {
+        document.getElementById('quiz-container').style.display = 'none';
+        const summary = document.getElementById('summary');
+        summary.style.display = 'block';
+
+        const summaryList = document.getElementById('summary-list');
+        summaryList.innerHTML = '';
+
+        let correctAnswers = 0;
+
+        quizData.forEach((q, index) => {
+            const summaryItem = document.createElement('li');
+            summaryItem.innerHTML = `
+                <strong>${q.question}</strong><br>
+                <div style="text-align: left; margin-left: 20%;">
+                    Votre réponse: ${q.choices[selectedAnswers[index]]} - 
+                    ${selectedAnswers[index] === q.correct ? '<span class="correct">Correct</span>' : '<span class="incorrect">Incorrect</span>'}<br>
+                    Bonne réponse: ${q.choices[q.correct]}
+                </div>
+            `;
+            summaryList.appendChild(summaryItem);
+            if (selectedAnswers[index] === q.correct) {
+                correctAnswers++;
+            }
+        });
+
+        document.getElementById('score').textContent = `Score: ${correctAnswers} / ${quizData.length}`;
+    }
+
+    function restartQuiz() {
+        currentQuestionIndex = 0;
+        selectedAnswers = [];
+        document.getElementById('summary').style.display = 'none';
+        document.getElementById('quiz-container').style.display = 'block';
+        loadQuestion();
+    }
+
+    loadQuestion();
+</script>
+
+</body>
+
+</html>
